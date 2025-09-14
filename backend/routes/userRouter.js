@@ -1,0 +1,135 @@
+const { Router } = require("express");
+const { checkUserMiddleware } = require("../middlewares/checkUserMiddleware");
+const { checkSignInDataMiddleware } = require('../middlewares/checkSignInDataMiddleware.js');
+const { chechUserUpdateMiddleware } = require("../middlewares/chechUserUpdateMiddleware.js");
+const { createJWT, decodeJWT } = require("../utils/jwt.js");
+
+
+const userModel = require('../models/UserModel.js');
+const router = Router();
+
+router.post('/sign-up', checkUserMiddleware, async (req, res) => {
+    const { firstname, lastname, username, password } = req.userObj;
+
+    try {
+        const checkUser = await userModel.findOne({ username });
+
+        if (checkUser !== null) {
+            res.status(200).json({
+                success: false,
+                error: true,
+                errorMsg: "Username Taken!"
+            });
+
+            return;
+        }
+
+        const newUser = new userModel({
+            firstname,
+            lastname,
+            username,
+            password
+        });
+
+        await newUser.save();
+
+        res.status(200).json({
+            success: true,
+            error: false,
+            errorMsg: "none"
+        });
+
+    } catch (error) {
+        res.status(200).json({
+            success: false,
+            error,
+            errorMsg: "Data Not Save"
+        });
+    }
+});
+
+router.post('/sign-in', checkSignInDataMiddleware, async (req, res) => {
+    const userObj = req.userObj;
+
+    try {
+        const ifExist = await userModel.findOne(userObj).select("username firstname lastname");
+
+        if (!ifExist) {
+            res.status(404).json({
+                success: false,
+                error: true,
+                errorMsg: "Incorrect Credentials!"
+            });
+            return;
+        }
+
+        const authToken = createJWT({ _id: ifExist._id });
+
+        res.status(201).json({
+            success: true,
+            error: false,
+            errorMsg: "Sign-In Successful",
+            authId: authToken,
+            userInfo: {
+                userObj: ifExist,
+                userAccount: "Account"
+            }
+        });
+    } catch (error) {
+        res.status(400).json({
+            success: false,
+            error,
+            errorMsg: "Internal Error"
+        });
+    }
+});
+
+router.put('/update', chechUserUpdateMiddleware, async (req, res) => {
+    const userObj = req.userObj;
+    const authId = req.authId;
+
+    const decoded = decodeJWT(authId);
+
+    if (!decoded) {
+        res.status(404).json({
+            success: false,
+            error: true,
+            errorMsg: "Incorrect Credentials!"
+        });
+        return;
+    }
+
+    try {
+        if (userObj.username !== undefined) {
+            const findUsername = await userModel.findOne({ username: userObj.username });
+
+            if (findUsername._id.toString() !== decoded._id.toString()) {
+                res.status(400).json({
+                    success: false,
+                    error: false,
+                    errorMsg: "Username Taken!"
+                });
+                return;
+            }
+        }
+
+        await userModel.findOneAndUpdate(
+            { _id: decoded._id },
+            { "$set": userObj }
+        );
+
+        res.status(200).json({
+            success: true,
+            error: false,
+            errorMsg: 'none'
+        });
+    } catch (error) {
+        res.status(404).json({
+            success: false,
+            error,
+            errorMsg: 'Internal Error!'
+        });
+    }
+});
+
+module.exports = router;
