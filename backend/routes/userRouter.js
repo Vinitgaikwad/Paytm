@@ -36,7 +36,7 @@ router.post('/sign-up', checkUserMiddleware, async (req, res) => {
 
         const newAccount = new accountModel({
             accId: user._id,
-            balance: Math.random() * 10000
+            balance: Math.floor(Math.random() * 10000) + 1
         });
 
         await newAccount.save();

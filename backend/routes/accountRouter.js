@@ -21,7 +21,7 @@ router.get('/balance', authMiddleware, async (req, res) => {
         res.status(400).json({
             succuss: false,
             error: true,
-            errorMsg: "internal faultS"
+            errorMsg: error.message
         });
     }
 });
@@ -46,16 +46,17 @@ router.post('/transaction', authMiddleware, async (req, res) => {
         const senderAccount = await accountModel.findOne({ accId: userId }).session(session);
         const receiverAccount = await accountModel.findOne({ accId: userObj.to }).session(session);
 
+
         if (!receiverAccount) {
             throw new Error("Receiver not found");
         }
 
-        if (senderAccount.balance < userObj.amount) {
+        if (senderAccount.balance < userObj.amount || userId === userObj.to) {
             await session.abortTransaction();
             return res.status(400).json({
                 succuss: false,
                 error: true,
-                errorMsg: "Insufficient balance"
+                errorMsg: "Insufficient balance or incorrect account"
             });
         }
 

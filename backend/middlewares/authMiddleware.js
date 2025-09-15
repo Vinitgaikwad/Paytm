@@ -3,7 +3,7 @@ const { authZodSchema } = require("../zod/account");
 
 
 function authMiddleware(req, res, next) {
-    const { Authorization } = req.headers;
+    const Authorization = req.headers.authorization;
     const { success } = authZodSchema.safeParse(Authorization);
     const decoded = decodeJWT(Authorization);
 
