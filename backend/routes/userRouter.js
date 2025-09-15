@@ -6,6 +6,7 @@ const { createJWT, decodeJWT } = require("../utils/jwt.js");
 
 
 const userModel = require('../models/UserModel.js');
+const accountModel = require('../models/AccountModel.js');
 const router = Router();
 
 router.post('/sign-up', checkUserMiddleware, async (req, res) => {
@@ -31,7 +32,14 @@ router.post('/sign-up', checkUserMiddleware, async (req, res) => {
             password
         });
 
-        await newUser.save();
+        const user = await newUser.save();
+
+        const newAccount = new accountModel({
+            accId: user._id,
+            balance: Math.random() * 10000
+        });
+
+        await newAccount.save();
 
         res.status(200).json({
             success: true,
@@ -71,8 +79,7 @@ router.post('/sign-in', checkSignInDataMiddleware, async (req, res) => {
             errorMsg: "Sign-In Successful",
             authId: authToken,
             userInfo: {
-                userObj: ifExist,
-                userAccount: "Account"
+                userObj: ifExist
             }
         });
     } catch (error) {
@@ -102,7 +109,6 @@ router.put('/update', chechUserUpdateMiddleware, async (req, res) => {
     try {
         if (userObj.username !== undefined) {
             const findUsername = await userModel.findOne({ username: userObj.username });
-
             if (findUsername._id.toString() !== decoded._id.toString()) {
                 res.status(400).json({
                     success: false,
