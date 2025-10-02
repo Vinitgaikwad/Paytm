@@ -14,14 +14,13 @@ router.get('/balance', authMiddleware, async (req, res) => {
 
         res.status(200).json({
             succuss: true,
-            error: false,
+            msg: "Account Info Loaded Succussful!",
             account
         });
     } catch (error) {
         res.status(400).json({
             succuss: false,
-            error: true,
-            errorMsg: error.message
+            msg: error.message
         });
     }
 });
@@ -34,8 +33,7 @@ router.post('/transaction', authMiddleware, async (req, res) => {
     if (!parsed.success) {
         return res.status(400).json({
             succuss: false,
-            error: true,
-            errorMsg: parsed.error.errors
+            msg: parsed.error.errors
         });
     }
 
@@ -55,8 +53,7 @@ router.post('/transaction', authMiddleware, async (req, res) => {
             await session.abortTransaction();
             return res.status(400).json({
                 succuss: false,
-                error: true,
-                errorMsg: "Insufficient balance or incorrect account"
+                msg: "Insufficient balance or incorrect account"
             });
         }
 
@@ -76,15 +73,13 @@ router.post('/transaction', authMiddleware, async (req, res) => {
 
         res.json({
             succuss: true,
-            error: false,
-            message: "Transaction Successful"
+            msg: "Transaction Successful"
         });
     } catch (error) {
         await session.abortTransaction();
         res.status(500).json({
             succuss: false,
-            error: true,
-            errorMsg: error.message
+            msg: error.message
         });
     } finally {
         session.endSession();

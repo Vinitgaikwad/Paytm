@@ -18,8 +18,7 @@ router.post('/sign-up', checkUserMiddleware, async (req, res) => {
         if (checkUser !== null) {
             res.status(200).json({
                 success: false,
-                error: true,
-                errorMsg: "Username Taken!"
+                msg: "Username Taken!"
             });
 
             return;
@@ -43,15 +42,13 @@ router.post('/sign-up', checkUserMiddleware, async (req, res) => {
 
         res.status(200).json({
             success: true,
-            error: false,
-            errorMsg: "none"
+            msg: "Account Created Succussfully!"
         });
 
     } catch (error) {
         res.status(200).json({
             success: false,
-            error,
-            errorMsg: "Data Not Save"
+            msg: "Data Not Save"
         });
     }
 });
@@ -65,8 +62,7 @@ router.post('/sign-in', checkSignInDataMiddleware, async (req, res) => {
         if (!ifExist) {
             res.status(404).json({
                 success: false,
-                error: true,
-                errorMsg: "Incorrect Credentials!"
+                msg: "Incorrect Credentials!"
             });
             return;
         }
@@ -75,8 +71,7 @@ router.post('/sign-in', checkSignInDataMiddleware, async (req, res) => {
 
         res.status(201).json({
             success: true,
-            error: false,
-            errorMsg: "Sign-In Successful",
+            msg: "Sign-In Successful",
             authId: authToken,
             userInfo: {
                 userObj: ifExist
@@ -85,8 +80,7 @@ router.post('/sign-in', checkSignInDataMiddleware, async (req, res) => {
     } catch (error) {
         res.status(400).json({
             success: false,
-            error,
-            errorMsg: "Internal Error"
+            msg: "Internal Error"
         });
     }
 });
@@ -100,8 +94,7 @@ router.put('/update', chechUserUpdateMiddleware, async (req, res) => {
     if (!decoded) {
         res.status(404).json({
             success: false,
-            error: true,
-            errorMsg: "Incorrect Credentials!"
+            msg: "Incorrect Credentials!"
         });
         return;
     }
@@ -112,8 +105,7 @@ router.put('/update', chechUserUpdateMiddleware, async (req, res) => {
             if (findUsername._id.toString() !== decoded._id.toString()) {
                 res.status(400).json({
                     success: false,
-                    error: false,
-                    errorMsg: "Username Taken!"
+                    msg: "Username Taken!"
                 });
                 return;
             }
@@ -126,14 +118,12 @@ router.put('/update', chechUserUpdateMiddleware, async (req, res) => {
 
         res.status(200).json({
             success: true,
-            error: false,
-            errorMsg: 'none'
+            msg: 'Update Complete!'
         });
     } catch (error) {
         res.status(404).json({
             success: false,
-            error,
-            errorMsg: 'Internal Error!'
+            msg: 'Internal Error!'
         });
     }
 });

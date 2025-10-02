@@ -9,9 +9,7 @@ export default function UserDashboard() {
                     <p className="text-lg font-bold py-2">Users</p>
                     <input type="text" className="w-[99%] border-[1px]  border-gray-100 px-2 py-1 rounded-md shadow-lg shadow-gray-200" placeholder="Search User" />
                 </div>
-                <div>
-                    <UserTable></UserTable>
-                </div>
+                <UserTable></UserTable>
             </div>
         </>
     )
