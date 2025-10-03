@@ -4,8 +4,8 @@ const useAlertStore = create((set) => ({
     msg: "",
     success: null,
     viewOn: false,
-    setAlertMsg: ({ msg, success }) => set({ msg: msg, success: success }),
-    setAlertDefault: () => set({ msg: "", success: null })
+    setAlertMsg: ({ msg, success, viewOn }) => set({ msg: msg, success: success, viewOn: viewOn }),
+    setAlertDefault: () => set({ msg: "", success: null, viewOn: false })
 }));
 
 export default useAlertStore;

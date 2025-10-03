@@ -38,7 +38,7 @@ export default function SignUpForm() {
 
         const { msg, success } = response.data;
 
-        changeAlert({ msg, success });
+        changeAlert({ msg, success, viewOn: true });
     }
 
     return (

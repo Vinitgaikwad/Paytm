@@ -6,9 +6,10 @@ const accountRouter = require('./routes/accountRouter.js')
 const cors = require('cors');
 const app = express();
 
-connectDB();
+
 
 dotenv.config();
+connectDB();
 app.use(express.json());
 app.use(cors());
 app.use('/api/v1/user', userRouter);

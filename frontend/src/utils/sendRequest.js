@@ -15,6 +15,6 @@ export default async function sendRequest(url, method = 'GET', body = null, head
     }
 
     const response = await axios(config);
-    console.log('Response:', response);
+    console.log('Response:', response.data);
     return response;
 }
