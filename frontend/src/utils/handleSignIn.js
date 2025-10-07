@@ -1,21 +1,37 @@
 import useAlertStore from "../store/alertStore";
+import useUserStore from "../store/UserStore";
 import sendRequest from "../utils/sendRequest";
 
 const handleSignIn = async (inputFields, navigate) => {
     const changeAlert = useAlertStore.getState().setAlertMsg;
+    const setUserInfo = useUserStore.getState().setUserInfo;
+    const setBalance = useUserStore.getState().setBalance;
 
-    const response = await sendRequest("http://localhost:4444/api/v1/user/sign-in", 'POST', inputFields);
+    const response = await sendRequest(`${import.meta.env.VITE_USER_LINK}/sign-in`, 'POST', inputFields);
 
-    console.log(response.data);
+    const { msg, success, authId } = response.data;
 
-    const { msg, success } = response.data;
-
-    changeAlert({ msg, success, viewOn: true });
+    if (success === false) {
+        changeAlert({ msg, success, viewOn: true });
+    }
 
     if (success === true) {
-        // Send a request to get account details
+        const { _id, username, firstname } = response.data.userInfo.userObj;
+        setUserInfo(_id, username, firstname);
+
+
+        const accountResponse = await sendRequest(`${import.meta.env.VITE_ACCOUNT_LINK}/balance`, 'GET', {}, {
+            authorization: authId
+        });
+        console.log(accountResponse.data);
+
+        setBalance(accountResponse.data.account.balance);
+
         navigate('/dashboard');
+        changeAlert({ msg, success, viewOn: true });
     }
+
+    console.log(import.meta.env.VITE_USER_LINK);
 }
 
 export default handleSignIn;

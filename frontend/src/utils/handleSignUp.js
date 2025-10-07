@@ -10,7 +10,7 @@ const handleSignUp = async (signinFields) => {
         return;
     }
 
-    const response = await sendRequest('http://localhost:4444/api/v1/user/sign-up', 'POST',
+    const response = await sendRequest(`${import.meta.env.VITE_USER_LINK}/sign-up`, 'POST',
         {
             firstname,
             lastname,

@@ -12,7 +12,6 @@ export default async function sendRequest(url, method = 'GET', body = null, head
 
     try {
         const response = await axios(config);
-        console.log('Response:', response.data);
         return response;
     } catch (error) {
         console.error('Request failed:', error.response?.data || error.message);

@@ -9,8 +9,6 @@ export default function Alert() {
     const msg = useAlertStore((state) => state.msg);
     const setAlertMsg = useAlertStore((state) => state.setAlertDefault);
 
-    console.log(success, viewOn);
-
     const setTimeOutId = setTimeout(() => {
         setAlertMsg();
     }, 2000);

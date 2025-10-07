@@ -57,7 +57,7 @@ router.post('/sign-in', checkSignInDataMiddleware, async (req, res) => {
     const userObj = req.userObj;
 
     try {
-        const ifExist = await userModel.findOne(userObj).select("username firstname lastname");
+        const ifExist = await userModel.findOne(userObj).select("username firstname");
 
         if (!ifExist) {
             res.status(404).json({

@@ -20,7 +20,8 @@ router.get('/balance', authMiddleware, async (req, res) => {
     } catch (error) {
         res.status(400).json({
             succuss: false,
-            msg: error.message
+            msg: error.message,
+            account: null
         });
     }
 });
