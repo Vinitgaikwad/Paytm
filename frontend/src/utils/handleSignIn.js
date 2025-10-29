@@ -1,5 +1,6 @@
 import useAlertStore from "../store/alertStore";
-import useUserStore from "../store/UserStore";
+import useUserStore from "../store/userStore";
+import transactionStore from "../store/transactionStore";
 import sendRequest from "../utils/sendRequest";
 
 const handleSignIn = async (inputFields, navigate) => {
@@ -7,6 +8,7 @@ const handleSignIn = async (inputFields, navigate) => {
     const setUserInfo = useUserStore.getState().setUserInfo;
     const setBalance = useUserStore.getState().setBalance;
     const setAuth = useUserStore.getState().setAuth;
+    const setFrom = transactionStore.getState().setFrom;
 
     const response = await sendRequest(`${import.meta.env.VITE_USER_LINK}/sign-in`, 'POST', inputFields);
 
@@ -19,9 +21,8 @@ const handleSignIn = async (inputFields, navigate) => {
     if (success === true) {
         const { _id, username, firstname } = response.data.userInfo.userObj;
         setUserInfo(_id, username, firstname);
-        console.log(authId);
         setAuth(authId);
-
+        setFrom(_id);
 
         const accountResponse = await sendRequest(`${import.meta.env.VITE_ACCOUNT_LINK}/balance`, 'GET', {}, {
             authorization: authId
@@ -33,8 +34,6 @@ const handleSignIn = async (inputFields, navigate) => {
         navigate('/dashboard');
         changeAlert({ msg, success, viewOn: true });
     }
-
-    console.log(import.meta.env.VITE_USER_LINK);
 }
 
 export default handleSignIn;

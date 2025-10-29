@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import useUserStore from "../store/UserStore";
+import useUserStore from "../store/userStore";
 import UserTable from "./UserTable";
 import sendRequest from "../utils/sendRequest";
 
@@ -12,6 +12,18 @@ export default function UserDashboard() {
     const handleChange = (e) => {
         setSearchInput(e.target.value);
     };
+
+    useEffect(() => {
+        const setBalanceOnRender = async () => {
+            const authorization = useUserStore.getState().authorization;
+            const setBalance = useUserStore.getState().setBalance;
+            const accountResponse = await sendRequest(`${import.meta.env.VITE_ACCOUNT_LINK}/balance`, 'GET', {}, {
+                authorization: authorization
+            });
+            setBalance(accountResponse.data.account.balance);
+        }
+        setBalanceOnRender();
+    }, []);
 
     useEffect(() => {
         if (!auth) return;
