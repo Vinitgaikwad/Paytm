@@ -131,6 +131,7 @@ router.put('/update', chechUserUpdateMiddleware, async (req, res) => {
 
 router.get('/filter', authMiddleware, async (req, res) => {
     const { filter } = req.query;
+    const userId = req.userId;
     console.log("hello", filter);
 
     try {
@@ -143,10 +144,15 @@ router.get('/filter', authMiddleware, async (req, res) => {
         }
 
         const users = await userModel.find({
-            $or: [
-                { username: { $regex: filter, $options: "i" } },
-                { firstname: { $regex: filter, $options: "i" } },
-                { lastname: { $regex: filter, $options: "i" } },
+            $and: [
+                {
+                    $or: [
+                        { username: { $regex: filter, $options: "i" } },
+                        { firstname: { $regex: filter, $options: "i" } },
+                        { lastname: { $regex: filter, $options: "i" } },
+                    ]
+                },
+                { _id: { $ne: userId } }
             ]
         }).select('-password');
 
