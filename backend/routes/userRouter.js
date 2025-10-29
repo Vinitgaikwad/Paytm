@@ -7,6 +7,7 @@ const { createJWT, decodeJWT } = require("../utils/jwt.js");
 
 const userModel = require('../models/UserModel.js');
 const accountModel = require('../models/AccountModel.js');
+const { authMiddleware } = require("../middlewares/authMiddleware.js");
 const router = Router();
 
 router.post('/sign-up', checkUserMiddleware, async (req, res) => {
@@ -124,6 +125,49 @@ router.put('/update', chechUserUpdateMiddleware, async (req, res) => {
         res.status(404).json({
             success: false,
             msg: 'Internal Error!'
+        });
+    }
+});
+
+router.get('/filter', authMiddleware, async (req, res) => {
+    const { filter } = req.query;
+    console.log("hello", filter);
+
+    try {
+        if (!filter || filter === "") {
+            res.status(404).json({
+                success: false,
+                msg: 'Empty Query!'
+            });
+            return;
+        }
+
+        const users = await userModel.find({
+            $or: [
+                { username: { $regex: filter, $options: "i" } },
+                { firstname: { $regex: filter, $options: "i" } },
+                { lastname: { $regex: filter, $options: "i" } },
+            ]
+        }).select('-password');
+
+        console.log(users);
+
+        if (users.length === 0) {
+            res.json({
+                success: true,
+                msg: 'No Such User Found'
+            });
+            return;
+        }
+
+        res.json({
+            users
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            msg: 'Internal Error!',
+            userMAg: error.message
         });
     }
 });

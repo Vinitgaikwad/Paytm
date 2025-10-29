@@ -6,6 +6,7 @@ const handleSignIn = async (inputFields, navigate) => {
     const changeAlert = useAlertStore.getState().setAlertMsg;
     const setUserInfo = useUserStore.getState().setUserInfo;
     const setBalance = useUserStore.getState().setBalance;
+    const setAuth = useUserStore.getState().setAuth;
 
     const response = await sendRequest(`${import.meta.env.VITE_USER_LINK}/sign-in`, 'POST', inputFields);
 
@@ -18,6 +19,8 @@ const handleSignIn = async (inputFields, navigate) => {
     if (success === true) {
         const { _id, username, firstname } = response.data.userInfo.userObj;
         setUserInfo(_id, username, firstname);
+        console.log(authId);
+        setAuth(authId);
 
 
         const accountResponse = await sendRequest(`${import.meta.env.VITE_ACCOUNT_LINK}/balance`, 'GET', {}, {
